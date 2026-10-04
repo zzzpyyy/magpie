@@ -1,0 +1,13 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>#760 界面预览 · a009399</title>
+<style>:root{color-scheme:light dark;--bg:#f6f6f7;--fg:#1d1d1f;--muted:#6e6e73;--card:#fff;--line:#e5e5ea}
+@media (prefers-color-scheme:dark){:root{--bg:#111113;--fg:#f2f2f4;--muted:#9a9aa0;--card:#1c1c1f;--line:#2c2c30}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,"Segoe UI","PingFang SC","Noto Sans CJK SC",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}h1{font-size:20px;margin:0 0 4px}.m{color:var(--muted);font-size:13px;margin:0 0 20px}
+video,img{display:block;width:100%;border-radius:10px;border:1px solid var(--line);background:var(--card)}figure{margin:0 0 28px}figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+a{color:inherit}</style>
+<main><h1>#760 界面预览</h1><p class="m">commit a009399 · <a href="https://github.com/yetone/magpie/pull/760">回到 PR</a> · diff 让路由侧「按模型计数的用量窗口」（如某个模型的周窗口）也被标记为 capped 并带上 capsSome，前端据此在账号行显示新的「{模型名} 已达上限 · x 后恢复」提示与对应说明，另外新增了四条中文文案。</p>
+<figure><video src="preview.mp4" controls autoplay muted playsinline poster="poster.png"></video><figcaption>红线是鼠标走过的轨迹，红色圆环是一次点击；底部文字是这一步在做什么。空格暂停，← → 逐段查看。</figcaption></figure>
+<figure><img src="01-providers-list.png" alt="供应商页：沙盒里唯一的供应商 DeepSeek，带一个 API Key"><figcaption>账号行的用量上限提示在哪 · 供应商页：沙盒里唯一的供应商 DeepSeek，带一个 API Key</figcaption></figure>
+<figure><img src="02-provider-editor-accounts.png" alt="账号行：新的「{模型名} 已达上限」提示就出现在这一列账号里（本机没有订阅账号，看不到）"><figcaption>账号行的用量上限提示在哪 · 账号行：新的「{模型名} 已达上限」提示就出现在这一列账号里（本机没有订阅账号，看不到）</figcaption></figure>
+</main></html>

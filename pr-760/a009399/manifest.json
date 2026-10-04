@@ -1,0 +1,29 @@
+{
+  "summary": "diff 让路由侧「按模型计数的用量窗口」（如某个模型的周窗口）也被标记为 capped 并带上 capsSome，前端据此在账号行显示新的「{模型名} 已达上限 · x 后恢复」提示与对应说明，另外新增了四条中文文案。",
+  "scenes": [
+    {
+      "title": "账号行的用量上限提示在哪",
+      "shots": [
+        {
+          "file": "01-providers-list.png",
+          "caption": "供应商页：沙盒里唯一的供应商 DeepSeek，带一个 API Key",
+          "width": 2560
+        },
+        {
+          "file": "02-provider-editor-accounts.png",
+          "caption": "账号行：新的「{模型名} 已达上限」提示就出现在这一列账号里（本机没有订阅账号，看不到）",
+          "width": 1296
+        }
+      ]
+    }
+  ],
+  "video": "preview.mp4",
+  "poster": "poster.png",
+  "errors": [],
+  "leak": false,
+  "skipped": null,
+  "mismatch": "描述说「GUI 无需改动」「改动只是给 GUI 的数据（/api/providers 的 JSON）」，但 diff 实际改了 internal/gui/assets/app.js 的 capHeldOf / capHeldNote：新增 held.some 分支、新的提示元素与 title，并在 i18n.js 里加了四条中文文案——账号行上的提示文案因此会变，是可见的界面变化。",
+  "unseen": "沙盒里只有 DeepSeek（API Key，额度卡片只显示余额），没有订阅账号、没有订阅用量窗口，也不会有 capped / capsSome 数据，所以新的「某模型已达上限」提示和它的 title 在这台机器上不会出现；下面只展示它会出现的位置。",
+  "interactive": true,
+  "pages": 1
+}
