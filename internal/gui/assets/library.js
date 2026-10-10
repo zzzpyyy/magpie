@@ -396,7 +396,7 @@
       const m = market[kind];
       if (!m.items) continue;
       const names = new Set((list || []).map((x) => x.name));
-      for (const x of m.items) if (x.have && !names.has(x.have)) x.have = "";
+      for (const x of m.items) for (const key of ["have", "conflict"]) if (x[key] && !names.has(x[key])) x[key] = "";
       drawMarket(kind);
       fetchMarket(kind);
     }
@@ -3628,7 +3628,7 @@
     // The market reads the library as it is now; one it calls added that
     // this page doesn't list was added elsewhere — another window, the CLI.
     const mine = new Set((kind === "mcp" ? lib?.servers : lib?.skills)?.map((x) => x.name) || []);
-    if (lib && m.items.some((x) => x.have && !mine.has(x.have))) quietLoad();
+    if (lib && m.items.some((x) => (x.have || x.conflict) && !mine.has(x.have || x.conflict))) quietLoad();
   }
 
   // The descriptions skills.sh doesn't list, read from each SKILL.md.
@@ -3763,11 +3763,18 @@
   // the featured servers' words are magpie's own, so they're translated
   const about = (x) => (x.featured ? t(x.description) : x.description) || "";
 
+  const skillConflictText = (x) => t("The library already has a skill named {name}. Remove it before adding another with that name.", { name: x.conflict });
+
   function addButton(x, onAdd) {
     if (x.have) {
       const b = el("span", "mk-have");
       b.append(svg(CHECK, 11, 2), el("span", "", t("Added")));
       b.title = x.have === x.name ? t("In the library") : t("In the library as {name}", { name: x.have });
+      return b;
+    }
+    if (x.conflict) {
+      const b = el("span", "mk-conflict sub", t("Name in use"));
+      b.title = skillConflictText(x);
       return b;
     }
     const b = button(t("Add"), "action mk-add", async (e, btn) => {
@@ -3941,11 +3948,11 @@
     const agentsBox = el("div");
     const drawAgents = () => agentsBox.replaceChildren(agentChips(all, agents, (n) => { agents = n; drawAgents(); }, { names: true }));
     drawAgents();
-    if (!x.have) ed.append(...field(t("Agents"), agentsBox));
+    if (!x.have && !x.conflict) ed.append(...field(t("Agents"), agentsBox));
     const bar = el("div", "bar");
-    bar.append(el("span", "grow"), button(t(x.have ? "Close" : "Cancel"), "", closeLibModal));
+    bar.append(el("span", "grow"), button(t(x.have || x.conflict ? "Close" : "Cancel"), "", closeLibModal));
     let save = () => {};
-    if (!x.have) {
+    if (!x.have && !x.conflict) {
       const go = button(t("Add to the library"), "primary", async () => {
         go.disabled = true;
         go.textContent = t("Adding…");
@@ -3954,7 +3961,9 @@
       });
       bar.append(go);
       save = () => go.click();
-    } else bar.prepend(el("span", "mk-have", t("In the library as {name}", { name: x.have })));
+    } else bar.prepend(x.conflict
+      ? el("span", "mk-conflict sub", skillConflictText(x))
+      : el("span", "mk-have", t("In the library as {name}", { name: x.have })));
     ed.append(bar);
     modal = { save };
     openLib(ed);
@@ -3991,7 +4000,7 @@
     if (page.hidden || modal || dirty() || probing) return;
     await load(true);
   }
-  const shelf = () => JSON.stringify([lib?.servers?.map((x) => x.name), lib?.skills?.map((x) => x.name)]);
+  const shelf = () => JSON.stringify([lib?.servers?.map((x) => x.name), lib?.skills?.map((x) => [x.name, x.kind, x.source])]);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) quietLoad(); });
   window.addEventListener("focus", quietLoad);
   // opened on ?view=library: app.js showed the page before this was here

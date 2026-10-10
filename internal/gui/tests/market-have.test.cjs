@@ -16,7 +16,7 @@ const assets = path.resolve(__dirname, "../assets");
 const HOME = "/Users/tester";
 const agent = (id, name, icon) => ({ id, name, icon, skills: `${HOME}/.${id}/skills`, mcp: `${HOME}/.${id}/mcp.json` });
 const pw = { name: "playwright", transport: "stdio", command: "npx", args: ["-y", "@playwright/mcp@latest"], agents: ["claude"] };
-const pdf = { name: "pdf", kind: "folder", description: "PDFs", agents: ["claude"], source: `${HOME}/skills/pdf` };
+const pdf = { name: "pdf", kind: "github", description: "PDFs", agents: ["claude"], source: "https://github.com/acme/skills/tree/HEAD/pdf" };
 
 function serve(lang, lib, calls) {
   const view = (result) => ({

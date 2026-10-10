@@ -780,6 +780,8 @@ type MarketSkill struct {
 	// Description is known once it has been fetched
 	Description string `json:"description,omitempty"`
 	Have        string `json:"have,omitempty"`
+	// Conflict names a library skill occupying the name, without a matching source.
+	Conflict string `json:"conflict,omitempty"`
 }
 
 // featuredSkills are magpie's own skills, first in the market: in
@@ -915,7 +917,7 @@ func MarketSkills(q string) ([]MarketSkill, error) {
 		owner, _, _ := strings.Cut(f.Source, "/")
 		f.ID, f.Icon = f.Source+"/"+f.SkillID, gh(owner)
 		if l != nil {
-			f.Have = l.haveSkill(f.Source, f.SkillID, f.Name)
+			f.Have, f.Conflict = l.skillState(f.Source, f.SkillID, f.Name)
 		}
 		// once skills.sh lists it too, its count of installs is told, and
 		// it isn't shown twice
@@ -934,29 +936,29 @@ func MarketSkills(q string) ([]MarketSkill, error) {
 			Official: e.Official, Icon: gh(owner)}
 		ms.Description = about[ms.ID]
 		if l != nil {
-			ms.Have = l.haveSkill(e.Source, e.SkillID, e.Name)
+			ms.Have, ms.Conflict = l.skillState(e.Source, e.SkillID, e.Name)
 		}
 		out = append(out, ms)
 	}
 	return out, err
 }
 
-func (l *Library) haveSkill(source, id, name string) string {
+// skillState distinguishes an installed source from an occupied name. A
+// local import with no repository must still block a conflicting install,
+// but its name alone cannot prove that any market listing is installed.
+func (l *Library) skillState(source, id, name string) (have, conflict string) {
 	for _, s := range l.Skills {
 		if s.Source != nil && s.Source.Kind == "github" && strings.EqualFold(s.Source.Repo, source) &&
-			(s.Name == id || s.Name == name || lastPart(s.Source.Path) == id) {
-			return s.Name
+			(s.Name == id || lastPart(s.Source.Path) == id) {
+			return s.Name, ""
 		}
 	}
-	// one taken in from an agent's folder (npx skills puts them in
-	// ~/.agents/skills) has no source to match, and adding is turned away
-	// by name all the same (InstallMarketSkill): it's had by its name
 	for _, n := range []string{id, name} {
 		if s := l.skill(n); s != nil {
-			return s.Name
+			return "", s.Name
 		}
 	}
-	return ""
+	return "", ""
 }
 
 var abouts = struct {
